@@ -1,0 +1,308 @@
+<html>
+<!--
+I'm Still working on this game.
+Don't read that shuckin crap now:
+Hi guys, this is actually my first proper game I've made.
+I hope you guys like it.
+
+To understand the game better, read the book, 'THE MAZE RUNNER'.
+
+But theres no problem if you haven't read the book. Just click on the 'HOW TO' button.
+-->
+<head>
+  <title>THE MAZE RUNNER(Game Making in Progress)</title>
+  <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Ceviche+One|Press+Start+2P" rel="stylesheet">
+  <style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  button:hover{
+    cursor: pointer;
+  }
+  button{
+    transition-duration: 0.1s;
+  }
+  #gameBar{
+    width: 99.35%;
+    height: 50px;
+    position: absolute;
+    top: 100px;
+    background-color: #253e01;
+    border-bottom: 20px solid #1f2f01;
+    border-right: 5px solid DARKGREEN;
+    border-left: 5px solid DARKGREEN;
+    border-top: 4px solid #1f2f01;
+    text-align: center;
+  }
+  #shmap{
+    border: 7px ridge darkgreen;
+    font-weight: bold;
+    color: lightgreen;
+    width: 200px;
+    border-radius: 50px;
+    font-family: 'Ceviche One';
+    font-size: 2em;
+    background: linear-gradient(#3f6a00, #253e01, #1f2f06, #172307);
+  }
+  #shmap:hover, #HideMap:hover{
+    color: green;
+  }
+  #HideMap {
+    border: 7px ridge darkgreen;
+    font-weight: bold;
+    color: lightgreen;
+    width: 200px;
+    border-radius: 50px;
+    font-family: 'Ceviche One';
+    font-size: 2em;
+    background: linear-gradient(#3f6a00, #253e01, #1f2f06, #172307);
+
+  }
+  #maze{
+    height: 450px;
+    overflow-y:scroll;
+    display:contents;
+
+  }
+  #mapDiv{
+    display: inline-block;
+    background-color: white;
+
+
+  }
+  .MapB {
+    text-align: center;
+    color: black;
+    font-size: 1em;
+    background-color: #C8C2A8;
+    height: 48px;
+    width: 43px;
+
+    display: block;
+    opacity: 100;
+
+  }
+  .sectionB{
+    background-color: #78785A;
+
+    width: 41.58px;
+      }
+  .sectionB:hover{
+    background-color: #585132;
+    color: #C8C2A8;
+  }
+  .ontop {
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: none;
+    position: absolute;
+    background-color: #cccccc;
+    color: #aaaaaa;
+    opacity: 0.4;
+    filter: alpha(opacity = 50);
+  }
+  #popup {
+    width: 1000px;
+    height: 600px;
+    position: absolute;
+    color: #000000;
+    background-color: #ffffff;
+    top: 203px;
+    left: 24%;
+    margin-top: -100px;
+    margin-left: -150px;
+  }
+  @keyframes slideinleft{
+    from{
+      position: absolute;
+      left: 0px;
+    }
+    to{
+      left: 100%;
+    }
+  }
+
+  body{
+    background: linear-gradient(#1F2F06, #3F6A00, #173307);
+    margin: 0px;
+  }
+  br {
+    line-height: 47px;
+  }
+  hr{
+    background-color: #253e01;
+    height: 5px;
+    border: 0;
+  }
+  .player-body{
+    color: white;
+    font-size: 1em;
+    height: 45px;
+    width: 35px;
+    background-color: blue;
+    border-radius: 7px;
+    border: 4px groove  blue;
+    position: relative;
+    left: 10px;
+
+  }
+  .player-eyes{
+    height: 4px;
+  	width: 7px;
+  	border-radius: 6px;
+  	background-color: grey;
+
+  }
+  #player-eye-one{
+    margin-left: 5px;
+  }
+  #player-eye-two{
+    margin-right: 5px;
+  }
+  #player-mouth{
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    height: 10px;
+    background-color: grey;
+    width: 20px;
+  }
+  .BBrick{
+    text-align: center;
+    color: grey;
+    font-size: 1em;
+    background-color: #253E01;
+    height: 48px;
+    width: 43px;
+    border-radius: 2px;
+  }
+
+  .UBBrick{
+    background: linear-gradient(darkgreen, #1f2f06);
+    height:47px;
+    width: 43px;
+    border-radius: 2px;
+
+  }
+  @keyframes slideintop {
+    from {
+      margin-top: -20%;
+      height: 0%;
+      padding: 0%;
+    }
+
+    to {
+      margin-top: 0%;
+      height: : 50px;
+      padding: 40px;
+    }
+  }
+  #headSpace{
+    line-height: 5PX;
+  }
+  #HEAD{
+    border: 5px solid darkgreen;
+    border-bottom: 20px solid #253E01;
+    border-top: 20px solid #253e01;
+    margin-top: 0px;
+
+    font-size: 0.9em;
+    font-family: 'Press Start 2P';
+    text-align: center;
+    height: 60px;
+    padding: 40px;
+    background: linear-gradient(darkgreen, #253E01);
+    color: #4f8600;
+    animation-name: slideintop;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+  }
+  @keyframes stretch {
+    from {
+      width: 0%;
+
+    }
+    to {
+      width: 330px;
+      padding:20px;
+    }
+}
+    @keyframes hide
+    {
+        from { opacity: 0; } to { opacity: 0; }
+    }
+   .form{
+    border: 7px ridge darkgreen;
+    font-weight:bold;
+    color: lightgreen;
+    border-radius: 100px;
+    width: 300px;
+    padding:20px;
+    font-family: 'Ceviche One';
+    font-size: 4em;
+    margin-left: 50px;
+    margin-right: 50px;
+    animation-name: hide, stretch;
+    animation-duration: 0.3s;
+    animation-timing-function: ease-in;
+    animation-iteration-count: 1;
+    animation-delay: 0s, 0.3s;
+    transition-duration: 0.1s;
+  }
+   #play:active, #how:active, #ldr:active{
+     font-size: 2.5em;
+     padding: 20px;
+     border: 10px ridge darkgreen;
+   }
+   #play:hover, #how:hover, #ldr:hover {
+     color: green;
+     border: 10px ridge darkgreen;
+     cursor: pointer;
+   }
+   .form{
+     background: linear-gradient(#3f6a00, #253e01, #1f2f06, #172307);
+
+   }
+  </style>
+
+</head>
+<body>
+
+  <div id="HEAD"><h1>THE MAZE RUNNER- GAME</h1></div>
+
+  <hr>
+
+<div id="content">
+  <center>
+
+
+  <input type="button" value="PLAY" id="play" class="form">
+  <!-- <br>
+  <br>
+  <input type="button" value="LEADERBOARDS" id="ldr" class="form">
+  <br>
+  <br>
+  <input type="button" value="HOW TO" id="how" class="form"> -->
+</center>
+</div>
+</body>
+
+<script>
+    var NoC=14;
+
+var play=document.getElementById("play");
+var ldr=document.getElementById('ldr');
+var how=document.getElementById('how');
+var content=document.getElementById('content');
+
+play.onclick = function() {
+  window.location = "./game.html"
+}
+
+</script>
+</html>
