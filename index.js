@@ -7,7 +7,7 @@ app.use(morgan('combined'));
 
 
 app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'main.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 app.get('/game.html', function(req, res) {
     res.sendFile(path.join(__dirname, 'game.html'))
