@@ -13,6 +13,7 @@ var player_c;
 var side = 15;
 var dim = Math.floor(mindist/side);
 var maze;
+var reloading;
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -125,6 +126,7 @@ class Maze {
         boxes[this.maze.get_index(this.playerx, this.playery)].state = "player";
 
         if(this.playerx==dim && this.playery==dim) {
+            reloading = true;
             location.reload(true);
         }
       
@@ -217,11 +219,13 @@ function keyPressed() {
 }
 
 function draw() {
-  background(220);
-  stroke(color(0,0,0));
-  strokeWeight(2);
-  square(0,0,dim*side);
-  noStroke();
-  maze.draw();
+    if(!reloading) {
+        background(220);
+        stroke(color(0,0,0));
+        strokeWeight(2);
+        square(0,0,dim*side);
+        noStroke();
+        maze.draw();    
+    }
 }
 
