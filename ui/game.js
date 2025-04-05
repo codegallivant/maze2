@@ -125,7 +125,7 @@ class Maze {
         boxes[this.maze.get_index(this.playerx, this.playery)].state = "player";
 
         if(this.playerx==dim && this.playery==dim) {
-          location.reload(true);
+            $(window).location.href = $(window).location.href;
         }
       
     }
