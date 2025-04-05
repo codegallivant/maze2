@@ -13,7 +13,7 @@ var player_c;
 var side = 15;
 var dim = Math.floor(mindist/side);
 var maze;
-var reloading;
+var reloading = false;
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
