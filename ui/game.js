@@ -125,7 +125,7 @@ class Maze {
         boxes[this.maze.get_index(this.playerx, this.playery)].player();
         boxes[this.maze.get_index(this.playerx, this.playery)].state = "player";
 
-        if(this.playerx==dim && this.playery==dim) {
+        if(this.playerx==dim && this.playery==dim && !reloading) {
             reloading = true;
             location.reload(true);
         }
