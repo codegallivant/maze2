@@ -12,12 +12,7 @@ var opened_c;
 var player_c;
 var side = 15;
 var dim = Math.floor(mindist/side);
-function setup() {
-  createCanvas(side*dim, side*dim);
-  closed_c = color(0,0,0);
-  opened_c = color(255,255,255);
-  player_c = color('blue');
-}
+var maze;
 
 function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -25,66 +20,13 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function create_maze() {
-    var percolates = false;
-    var a;
-    var b;
-    opened_ratio = 0;
-    // var tempmaze;
-    maze = new Percolation(dim);
-    maze.open(1,1);
-    maze.open(dim,dim);
-
-    while(percolates == false) {
-        a = getRandomInt(2, dim-1);
-        b = getRandomInt(1, dim);
-        // tempmaze = new Percolation(dim);
-        // tempmaze.id_grid = maze.id_grid;
-        // tempmaze.value_grid = maze.value_grid;
-        // tempmaze.sizes = maze.sizes;
-        // console.log([a,b]);
-        // tempmaze.open(a, b);
-        // percolates = tempmaze.percolates();
-        maze.open(a, b);
-        opened_sites = maze.numberOfOpenSites();
-        opened_ratio = opened_sites/(dim**2);
-        percolates = maze.percolates();
-        // }
-    }
-    console.log(opened_sites);
-    console.log(opened_ratio); 
-    return opened_ratio
-}
-var requirement = "hard";
-var mode;
-while(mode != requirement) {
-    var opened_ratio = create_maze();
-    if (opened_ratio > 0.8 && opened_ratio <=0.4) {
-        mode = "reject";
-    } else if (opened_ratio >= 0.65) {
-        mode = "easy";
-    } else if (opened_ratio>0.4 && opened_ratio<0.65) {
-        mode = "hard";
-    }
-}
-var closed_c;
-var opened_c;
-var player_c;
-var side = 15;
-function setup() {
-    var mycanvas = createCanvas(side*dim, side*dim);
-    mycanvas.parent("gamecanvas")
-    closed_c = color(0,0,0);
-    opened_c = color(255,255,255);
-    player_c = color('blue');
-}
-
-
 class Box {
     constructor(x, y) {
         this.x = x;
         this.y = y;
+        this.state = "close";
     }
+
     display() {
         var y = this.x*side;
         var x = (dim-1-this.y)*side;
@@ -104,47 +46,182 @@ class Box {
         this.display();
     }
 }
-var boxes = [];
-for(var i = 0;i<dim;i++) {
-  for(var j = 0;j<dim;j++) {
-    boxes.push(new Box(i, j));   
-  }
-}
-var playerx = 1;
-var playery = 1;
 
-function keyPressed() {
-    if (keyCode === UP_ARROW && maze.isOpen(playerx-1, playery)) {
-        playerx--;
-    } else if (keyCode === DOWN_ARROW && maze.isOpen(playerx+1, playery)) {
-        playerx++;
-    }  else if (keyCode === RIGHT_ARROW && maze.isOpen(playerx, playery-1)) {
-        playery--;
-    } else if (keyCode === LEFT_ARROW && maze.isOpen(playerx, playery+1)) {
-        playery++;
-    } else {
+class Maze {
+    constructor(dim) {
+        this.dim = dim;
+        this.set_maze();
+        this.boxes = this.create_boxes();
+        this.playerx = 1;
+        this.playery = 1;
+        this.state = "normal";
+    }
+
+    create_maze() {
+        var percolates = false;
+        var a, b;
+        this.opened_ratio = 0;
+        var opened_sites;
+        this.maze = new Percolation(dim);
+        this.maze.open(1,1);
+        this.maze.open(dim, dim);
+        while(percolates == false) {
+            a = getRandomInt(2, dim-1);
+            b = getRandomInt(1, dim);
+            this.maze.open(a, b);
+            opened_sites = this.maze.numberOfOpenSites();
+            this.opened_ratio = opened_sites/(dim**2);
+            percolates = this.maze.percolates();
+        }
+        // console.log(opened_sites);
+        // console.log(this.opened_ratio); 
+        this.opened_ratio = this.opened_ratio; 
+    }
+
+    set_maze() {
+        var requirement = "hard";
+        var mode;
+        while(mode != requirement) {
+            this.create_maze();
+            // console.log(this.opened_ratio);
+            if (this.opened_ratio > 0.8 || this.opened_ratio <=0.4) {
+                mode = "reject";
+            } else if (this.opened_ratio >= 0.65) {
+                mode = "easy";
+            } else if (this.opened_ratio>0.4 && this.opened_ratio<0.65) {
+                mode = "hard";
+                console.log(mode);
+            }
+        }
+    }
+
+    create_boxes() {
+        var boxes = [];
+        for(var i = 0;i<dim;i++) {
+            for(var j = 0;j<dim;j++) {
+                boxes.push(new Box(i, j));   
+            }
+        }
+        return boxes;
+    }
+
+    draw() {
+        var boxes = this.boxes;
+        var maze_values = this.maze.value_grid;
+        for(var i = 0;i<maze_values.length;i++) {
+            if(this.state != "normal" && boxes[i].state == "player") {
+
+            }
+            else if(maze_values[i]==0) {
+                boxes[i].close();
+                boxes[i].state = "close";
+            } else if(maze_values[i]==1) {
+                boxes[i].open();
+                boxes[i].state = "open";
+            }  
+        }
+        
+        boxes[this.maze.get_index(this.playerx, this.playery)].player();
+        boxes[this.maze.get_index(this.playerx, this.playery)].state = "player";
+
+        if(this.playerx==dim && this.playery==dim) {
+          location.reload(true);
+        }
+      
     }
 }
+
+function solveMaze() {
+    let queue = [];
+    queue.push([1, 1]);
+    
+    let visited = new Set();
+    let parent = new Map();
+    visited.add("1,1");
+    
+    while (queue.length > 0) {
+      let [x, y] = queue.shift();
+      
+      if (x === dim && y === dim) {
+        break;
+      }
+      
+      let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+      for (let [dx, dy] of directions) {
+        let nx = x + dx;
+        let ny = y + dy;
+        
+        if (maze.maze.isOpen(nx, ny) && !visited.has(`${nx},${ny}`)) {
+          queue.push([nx, ny]);
+          visited.add(`${nx},${ny}`);
+          parent.set(`${nx},${ny}`, [x, y]);
+        }
+      }
+    }
+    
+    let path = [];
+    let current = [dim, dim];
+    while (current[0] !== 1 || current[1] !== 1) {
+      path.push(current);
+      current = parent.get(`${current[0]},${current[1]}`);
+    }
+    path.push([1, 1]);
+    path.reverse();
+    
+    return path;
+  }
+  
+  function animateSolution(path) {
+    maze.state = "animation";
+    let i = 0;
+    let interval = setInterval(() => {
+      if (i < path.length) {
+        maze.playerx = path[i][0];
+        maze.playery = path[i][1];
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 20); 
+  }
+  
+  function setup() {
+      var mycanvas = createCanvas(side*dim, side*dim);
+      mycanvas.parent("gamecanvas");
+      closed_c = color(0,0,0);
+      opened_c = color('gray');
+      player_c = color('blue');
+      maze = new Maze(dim);
+
+      
+      // Create and add the solve button
+      let solveButton = createButton('Solve Maze');
+      solveButton.position(10, side*dim + 10);
+      solveButton.mousePressed(() => {
+        let solutionPath = solveMaze();
+        animateSolution(solutionPath);
+      });
+  }
+
+
+function keyPressed() {
+    if (keyCode === UP_ARROW && maze.maze.isOpen(maze.playerx-1, maze.playery)) {
+        maze.playerx--;
+    } else if (keyCode === DOWN_ARROW && maze.maze.isOpen(maze.playerx+1, maze.playery)) {
+        maze.playerx++;
+    }  else if (keyCode === RIGHT_ARROW && maze.maze.isOpen(maze.playerx, maze.playery-1)) {
+        maze.playery--;
+    } else if (keyCode === LEFT_ARROW && maze.maze.isOpen(maze.playerx, maze.playery+1)) {
+        maze.playery++;
+    }
+}
+
 function draw() {
   background(220);
   stroke(color(0,0,0));
   strokeWeight(2);
-  square(0,0,dim*side)
-    noStroke();
-  maze_values = maze.value_grid;
-  for(var i = 0;i<maze_values.length;i++) {
-    if(maze_values[i]==0) {
-        boxes[i].close();
-    } else if(maze_values[i]==1) {
-        boxes[i].open();
-    } else {
-    }
-  }
-  boxes[maze.get_index(playerx, playery)].player();
-//   boxes[0].player();
-//   boxes[1].player();
-//   boxes[(dim**2)-1].player();
-  if(playerx==dim && playery==dim) {
-    location.reload(true);
-  }
+  square(0,0,dim*side);
+  noStroke();
+  maze.draw();
 }
+
